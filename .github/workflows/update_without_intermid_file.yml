@@ -1,17 +1,21 @@
 name: Replace Placeholders with Secrets
 
 on:
-  workflow_dispatch: # Allows manual trigger
   push:
-    branches:
-      - main
+    paths:
+      - test.txt # Trigger only if test.txt is modified
+
+  workflow_dispatch: # Allows manual trigger for testing
 
 jobs:
   update-file:
     runs-on: self-hosted
 
     steps:
-      - name: Debug File Permissions
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Initialize Target File
         run: |
           if [ -f "/home/temp_test/test.txt" ]; then
             echo "/home/temp_test/test.txt exists"
@@ -19,7 +23,7 @@ jobs:
           else
             echo "/home/temp_test/test.txt does not exist. Creating it."
             mkdir -p /home/temp_test
-            touch /home/temp_test/test.txt
+            cp test.txt /home/temp_test/test.txt
             chmod 666 /home/temp_test/test.txt
           fi
 
