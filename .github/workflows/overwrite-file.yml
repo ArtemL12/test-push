@@ -1,4 +1,4 @@
-name: Overwrite Local File with Secret
+name: Execute Script to Write Secret
 
 on:
   workflow_dispatch: # Allows manual trigger
@@ -7,11 +7,15 @@ on:
       - main
 
 jobs:
-  update-file:
+  write-file:
     runs-on: self-hosted
 
     steps:
-      - name: Overwrite Local File with Secret
-        run: |
-          echo "${{ secrets.MY_SECRET }}" > /home/test.txt
-        shell: bash
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Make Script Executable
+        run: chmod +x ./write_secret.sh
+
+      - name: Execute Script
+        run: ./write_secret.sh
