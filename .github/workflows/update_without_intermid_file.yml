@@ -1,4 +1,4 @@
-name: Replace Placeholders with Secrets interm
+name: Replace Placeholders with Secrets
 
 on:
   workflow_dispatch: # Allows manual trigger
@@ -11,15 +11,18 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Debug File Location
+      - name: Debug File Permissions
         run: |
-          echo "Listing all files in the repository..."
-          ls -R
+          if [ -f "/home/test.txt" ]; then
+            echo "/home/test.txt exists"
+            ls -l /home/test.txt
+          else
+            echo "/home/test.txt does not exist. Creating it."
+            touch /home/test.txt
+            chmod 666 /home/test.txt
+          fi
 
-      - name: Replace Placeholders in Repository File
+      - name: Replace Placeholders Dynamically
         env:
           MY_SECRET: ${{ secrets.MY_SECRET }}
           MY_SECRET2: ${{ secrets.MY_SECRET2 }}
@@ -29,8 +32,8 @@ jobs:
             PLACEHOLDER="{{${VAR}}}"
             VALUE=${!VAR}
             echo "Replacing $PLACEHOLDER with $VALUE"
-            sed -i "s|$PLACEHOLDER|$VALUE|g" home/test.txt
+            sed -i "s|$PLACEHOLDER|$VALUE|g" /home/test.txt
           done
-          echo "Content of updated test.txt:"
-          cat home/test.txt
+          echo "Content of updated /home/test.txt:"
+          cat /home/test.txt
         shell: bash
