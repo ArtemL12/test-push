@@ -1,1 +1,4 @@
 test
+My secret value is: {{MY_SECRET}}
+My secret value is: {{MY_SECRET}}
+My secret value is: {{MY_SECRET}}
