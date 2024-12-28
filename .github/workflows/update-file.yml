@@ -14,17 +14,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Debug Environment Variables
-        env:
-          MY_SECRET: ${{ secrets.MY_SECRET }}
-          MY_SECRET2: ${{ secrets.MY_SECRET2 }}
-          MY_SECRET3: ${{ secrets.MY_SECRET3 }}
+      - name: Debug File Permissions
         run: |
-          echo "MY_SECRET: $MY_SECRET"
-          echo "MY_SECRET2: $MY_SECRET2"
-          echo "MY_SECRET3: $MY_SECRET3"
-          echo "File content before replacement:"
-          cat test.txt
+          if [ -f "/home/test.txt" ]; then
+            echo "/home/test.txt exists"
+            ls -l /home/test.txt
+          else
+            echo "/home/test.txt does not exist. Creating it."
+            touch /home/test.txt
+          fi
 
       - name: Replace Placeholders Dynamically
         env:
@@ -38,6 +36,8 @@ jobs:
             echo "Replacing $PLACEHOLDER with $VALUE"
             sed -i "s|$PLACEHOLDER|$VALUE|g" test.txt
           done
-          echo "File content after replacement:"
-          cat test.txt
+          cp test.txt /home/test.txt
+          echo "File updated to /home/test.txt"
+          echo "Content of /home/test.txt:"
+          cat /home/test.txt
         shell: bash
