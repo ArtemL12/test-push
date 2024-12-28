@@ -34,7 +34,7 @@ jobs:
             PLACEHOLDER="{{${VAR}}}"
             VALUE=${!VAR}
             echo "Replacing $PLACEHOLDER with $VALUE"
-            sed -i "s|$PLACEHOLDER|$VALUE|g" repository_name_test
+            sed -i "s|$PLACEHOLDER|$VALUE|g" repository_name_test.yaml
           done
           cp test.txt /home/test.txt
           echo "File updated to /home/test.txt"
