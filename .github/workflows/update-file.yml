@@ -1,0 +1,20 @@
+name: Replace Placeholders with Secrets
+
+on:
+  workflow_dispatch: # Allows manual trigger
+  push:
+    branches:
+      - main
+
+jobs:
+  update-file:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Replace Placeholders and Update File
+        run: |
+          sed "s/{{MY_SECRET}}/${{ secrets.MY_SECRET }}/g" test.txt > /home/test.txt
+        shell: bash
