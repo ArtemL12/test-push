@@ -10,3 +10,4 @@ dfdsfs
 fdsfsfdsfs ds fdsfsfsf sf
  sf sf dsfdfsfdsf - --- - - - - - - {{MY_SECRET2}}
                                             {{MY_SECRET3}}
+{{MY_SECRET2}}
