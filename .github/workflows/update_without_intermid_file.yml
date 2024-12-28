@@ -14,16 +14,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Initialize Target File from Repository
+      - name: Ensure Target File Exists and Populate It
         run: |
-          echo "Checking out the repository file 'test.txt'..."
+          mkdir -p /home/temp_test
+          if [ -f "/home/temp_test/test.txt" ]; then
+            echo "/home/temp_test/test.txt exists. Overwriting with repository content."
+          else
+            echo "/home/temp_test/test.txt does not exist. Creating it from repository content."
+          fi
           if [ -f "test.txt" ]; then
-            echo "Found test.txt in the repository. Copying it to /home/temp_test/test.txt."
-            mkdir -p /home/temp_test
             cp test.txt /home/temp_test/test.txt
             chmod 666 /home/temp_test/test.txt
           else
-            echo "test.txt not found in the repository. Exiting."
+            echo "Repository file test.txt is missing. Exiting."
             exit 1
           fi
 
