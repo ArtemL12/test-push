@@ -19,7 +19,6 @@ jobs:
           MY_SECRET: ${{ secrets.MY_SECRET }}
           MY_SECRET2: ${{ secrets.MY_SECRET2 }}
           MY_SECRET3: ${{ secrets.MY_SECRET3 }}
-          # Add more secrets dynamically here if needed
         run: |
           for VAR in $(compgen -v | grep MY_SECRET); do
             PLACEHOLDER="{{${VAR}}}"
