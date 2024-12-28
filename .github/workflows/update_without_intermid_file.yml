@@ -33,6 +33,7 @@ jobs:
       - name: Replace Placeholders Dynamically
         env:
           MY_SECRET: ${{ secrets.MY_SECRET }}
+          MY_SECRET3: ${{ secrets.MY_SECRET1 }}
           MY_SECRET2: ${{ secrets.MY_SECRET2 }}
           MY_SECRET3: ${{ secrets.MY_SECRET3 }}
         run: |
