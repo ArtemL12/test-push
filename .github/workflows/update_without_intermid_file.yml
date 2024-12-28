@@ -29,7 +29,7 @@ jobs:
             PLACEHOLDER="{{${VAR}}}"
             VALUE=${!VAR}
             echo "Replacing $PLACEHOLDER with $VALUE"
-            sed -i "s|$PLACEHOLDER|$VALUE|g" path/to/test.txt
+            sed -i "s|$PLACEHOLDER|$VALUE|g" home/test.txt
           done
           echo "Content of updated test.txt:"
           cat home/test.txt
