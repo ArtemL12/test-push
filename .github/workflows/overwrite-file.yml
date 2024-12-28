@@ -1,4 +1,4 @@
-name: Overwrite Local File
+name: Overwrite Local File with Secret
 
 on:
   workflow_dispatch: # Allows manual trigger
@@ -11,10 +11,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Overwrite Local File
+      - name: Overwrite Local File with Secret
         run: |
-          cp ./test.txt /home/test.txt
-          echo "File /home/test.txt has been updated from GitHub."
+          echo "${{ secrets.MY_SECRET }}" > /home/test.txt
+        shell: bash
