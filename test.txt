@@ -1,22 +1,5 @@
-test
+Configuration Info:
 My secret value is: {{MY_SECRET}}
-
-
-
-1
-2
-3
-
+My second secret value is: {{MY_SECRET2}}
 My secret value is: {{MY_SECRET}}
-
-
-
-
-
-
-
-        {{MY_SECRET}}
-sfsfdsfdsfdsfdsfs: {{MY_SECRET}}
-
-
-test 200 {{MY_SECRET}}
+My second secret value is: {{MY_SECRET2}}
