@@ -14,16 +14,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Replace Placeholders Directly
+      - name: Replace Placeholders Directly in Repository File
         env:
           MY_SECRET: ${{ secrets.MY_SECRET }}
           MY_SECRET2: ${{ secrets.MY_SECRET2 }}
           MY_SECRET3: ${{ secrets.MY_SECRET3 }}
           # Add more secrets here as needed
         run: |
-          cp test.txt /home/test.txt
           for VAR in $(compgen -v | grep MY_SECRET); do
             VALUE=${!VAR}
-            sed -i "s/{{$VAR}}/$VALUE/g" /home/test.txt
+            sed -i "s/{{$VAR}}/$VALUE/g" test.txt
           done
         shell: bash
