@@ -1,7 +1,4 @@
-Configuration Info:
-My secret value is: {{MY_SECRET}}
-My second secret value is: {{MY_SECRET2}}
-My secret value is: {{MY_SECRET}}
+test
 My second secret value is: {{MY_SECRET2}}
 
 
