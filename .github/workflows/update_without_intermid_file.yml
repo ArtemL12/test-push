@@ -13,13 +13,14 @@ jobs:
     steps:
       - name: Debug File Permissions
         run: |
-          if [ -f "/home/test.txt" ]; then
-            echo "/home/test.txt exists"
-            ls -l /home/test.txt
+          if [ -f "/home/temp_test/test.txt" ]; then
+            echo "/home/temp_test/test.txt exists"
+            ls -l /home/temp_test/test.txt
           else
-            echo "/home/test.txt does not exist. Creating it."
-            touch /home/test.txt
-            chmod 666 /home/test.txt
+            echo "/home/temp_test/test.txt does not exist. Creating it."
+            mkdir -p /home/temp_test
+            touch /home/temp_test/test.txt
+            chmod 666 /home/temp_test/test.txt
           fi
 
       - name: Replace Placeholders Dynamically
@@ -32,8 +33,8 @@ jobs:
             PLACEHOLDER="{{${VAR}}}"
             VALUE=${!VAR}
             echo "Replacing $PLACEHOLDER with $VALUE"
-            sed -i "s|$PLACEHOLDER|$VALUE|g" /home/test.txt
+            sed -i "s|$PLACEHOLDER|$VALUE|g" /home/temp_test/test.txt
           done
-          echo "Content of updated /home/test.txt:"
-          cat /home/test.txt
+          echo "Content of updated /home/temp_test/test.txt:"
+          cat /home/temp_test/test.txt
         shell: bash
