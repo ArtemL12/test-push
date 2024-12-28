@@ -3,7 +3,7 @@ name: Replace Placeholders with Secrets
 on:
   push:
     paths:
-      - test.txt1 # Trigger only when test.txt is modified
+      - test.txt # Trigger only when test.txt is modified
   workflow_dispatch: # Allows manual triggering
 
 jobs:
