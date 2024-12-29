@@ -3,7 +3,7 @@ name: Sync GitHub Secrets to Vault (Self-Hosted)
 on:
   push:
     paths:
-      - qa # Trigger only when the 'qa' file is modified
+      - preprod # Trigger only when the 'qa' file is modified
   workflow_dispatch: # Allows manual triggering
 
 jobs:
