@@ -19,7 +19,7 @@ jobs:
           
           vault status
           
-          vault kv put ${{ github.event.inputs.secrets_path }} \
+          vault kv put ${{ PREPROD }} \
             MY_SECRET="${{ secrets.MY_SECRET }}"
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
