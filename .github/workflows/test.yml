@@ -19,7 +19,7 @@ jobs:
           
           vault status
           
-          vault kv put ${{ PREPROD }} \
+          vault kv put ${{ preprod }} \
             MY_SECRET="${{ secrets.MY_SECRET }}"
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
