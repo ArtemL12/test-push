@@ -3,50 +3,54 @@ name: Sync GitHub Secrets to Vault (Self-Hosted)
 on:
   push:
     paths:
-      - preprod # Trigger only when the 'preprod' file is modified
-  workflow_dispatch: # Allows manual triggering
+      - preprod
+  workflow_dispatch:
 
 jobs:
   sync-secrets:
     runs-on: self-hosted
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Sync Secrets with Vault
+        env:
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+          MY_SECRET1: ${{ secrets.MY_SECRET1 }}
+          MY_SECRET2: ${{ secrets.MY_SECRET2 }}
+          MY_SECRET3: ${{ secrets.MY_SECRET3 }}
         run: |
           export VAULT_ADDR="http://127.0.0.1:8200"
-          export VAULT_TOKEN="${{ secrets.VAULT_TOKEN }}"
+
+          # Check required commands
+          command -v jq >/dev/null 2>&1 || { echo "jq is required but not installed. Exiting."; exit 1; }
+          command -v vault >/dev/null 2>&1 || { echo "Vault CLI is required but not installed. Exiting."; exit 1; }
 
           vault status
 
           # Fetch existing Vault configurations
           existing_configs=$(vault kv list -format=json preprod | jq -r '.[]')
 
-          # Read the preprod file to identify desired configs
+          # Read the preprod file
           desired_configs=()
           while IFS= read -r line || [[ -n "$line" ]]; do
-            # Skip empty lines or comments
             [[ -z "$line" || "$line" == \#* ]] && continue
-
-            # Extract the config name
             IFS='=' read -r config params <<< "$line"
+
+            # Replace placeholders with secrets
+            params=$(echo "$params" | sed "s|{{MY_SECRET1}}|$MY_SECRET1|g" | sed "s|{{MY_SECRET2}}|$MY_SECRET2|g" | sed "s|{{MY_SECRET3}}|$MY_SECRET3|g")
+
             desired_configs+=("$config")
 
-            # Sync (add/update) the desired configuration in Vault
-            echo "Adding/updating $config in Vault..."
-            vault kv put "preprod/$config" $params
+            # Add or update configuration
+            echo "Processing $config with parameters: $params"
+            vault kv put "preprod/$config" $params || { echo "Failed to update $config in Vault. Skipping."; continue; }
           done < ./preprod
 
-          # Convert desired configs to a space-separated string
-          desired_configs_str=$(printf "%s " "${desired_configs[@]}")
-
-          # Remove configurations in Vault that are not in the preprod file
+          # Remove missing configurations
           for existing in $existing_configs; do
-            if [[ ! " ${desired_configs_str[@]} " =~ " ${existing} " ]]; then
+            if [[ ! " ${desired_configs[@]} " =~ " ${existing} " ]]; then
               echo "Removing $existing from Vault..."
-              vault kv delete "preprod/$existing"
+              vault kv delete "preprod/$existing" || { echo "Failed to remove $existing. Skipping."; continue; }
             fi
           done
-        env:
-          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
