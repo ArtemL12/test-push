@@ -20,23 +20,26 @@ jobs:
 
           vault status
 
-          # Read the qa file and replace placeholders with GitHub secrets
+          # Define a lookup table for GitHub secrets
+          declare -A secrets
+          secrets=(
+            ["MY_SECRET_1"]="${{ secrets.MY_SECRET_1 }}"
+            ["MY_SECRET_2"]="${{ secrets.MY_SECRET_2 }}"
+          )
+
+          # Read the qa file and use the lookup table to resolve secrets
           while IFS= read -r line || [[ -n "$line" ]]; do
             # Skip empty lines or comments
             [[ -z "$line" || "$line" == \#* ]] && continue
 
-            # Extract the key and value
-            IFS='=' read -r key value <<< "$line"
+            # Extract the key
+            IFS='=' read -r key placeholder <<< "$line"
 
-            # Replace placeholder with the actual GitHub secret
-            value=${value//\$\{\{ secrets./}
-            value=${value// \}\}/}
-
-            # Use the actual secret value
-            actual_value="${{ secrets.${value} }}"
+            # Resolve the secret value using the lookup table
+            value="${secrets[$key]}"
 
             # Push the key-value pair to Vault
-            vault kv put preprod/config "$key"="$actual_value"
+            vault kv put preprod/config "$key"="$value"
           done < ./qa
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
