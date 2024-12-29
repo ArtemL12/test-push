@@ -1,0 +1,4 @@
+# Example configurations
+config1=username="qa-user1" password="1111"
+config2=username="dev-user2" password="2222"
+config3=username="prod-user3" password="3333"
