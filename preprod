@@ -2,3 +2,4 @@
 config1=username="qa-user1" password={{MY_SECRET1}}
 config2=username="dev-user2" password={{MY_SECRET2}}
 config3=username="test" password={{MY_SECRET3}}
+config300=username="sdddddddddddddddddd" password={{MY_SECRET}}
