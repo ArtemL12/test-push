@@ -13,23 +13,40 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Add Secrets to Vault
+      - name: Sync Secrets with Vault
         run: |
           export VAULT_ADDR="http://127.0.0.1:8200"
           export VAULT_TOKEN="${{ secrets.VAULT_TOKEN }}"
 
           vault status
 
-          # Read the qa file and process each line dynamically
+          # Fetch existing Vault configurations
+          existing_configs=$(vault kv list -format=json preprod | jq -r '.[]')
+
+          # Read the preprod file to identify desired configs
+          desired_configs=()
           while IFS= read -r line || [[ -n "$line" ]]; do
             # Skip empty lines or comments
             [[ -z "$line" || "$line" == \#* ]] && continue
 
-            # Extract config name and parameters
+            # Extract the config name
             IFS='=' read -r config params <<< "$line"
+            desired_configs+=("$config")
 
-            # Execute the vault kv put command dynamically
+            # Sync (add/update) the desired configuration in Vault
+            echo "Adding/updating $config in Vault..."
             vault kv put "preprod/$config" $params
           done < ./preprod
+
+          # Convert desired configs to a space-separated string
+          desired_configs_str=$(printf "%s " "${desired_configs[@]}")
+
+          # Remove configurations in Vault that are not in the preprod file
+          for existing in $existing_configs; do
+            if [[ ! " ${desired_configs_str[@]} " =~ " ${existing} " ]]; then
+              echo "Removing $existing from Vault..."
+              vault kv delete "preprod/$existing"
+            fi
+          done
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
