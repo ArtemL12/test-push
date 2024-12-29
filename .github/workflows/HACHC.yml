@@ -20,26 +20,16 @@ jobs:
 
           vault status
 
-          # Define a lookup table for GitHub secrets
-          declare -A secrets
-          secrets=(
-            ["MY_SECRET_1"]="${{ secrets.MY_SECRET_1 }}"
-            ["MY_SECRET_2"]="${{ secrets.MY_SECRET_2 }}"
-          )
-
-          # Read the qa file and use the lookup table to resolve secrets
+          # Read the qa file and process each line dynamically
           while IFS= read -r line || [[ -n "$line" ]]; do
             # Skip empty lines or comments
             [[ -z "$line" || "$line" == \#* ]] && continue
 
-            # Extract the key
-            IFS='=' read -r key placeholder <<< "$line"
+            # Extract config name and parameters
+            IFS='=' read -r config params <<< "$line"
 
-            # Resolve the secret value using the lookup table
-            value="${secrets[$key]}"
-
-            # Push the key-value pair to Vault
-            vault kv put preprod/config "$key"="$value"
+            # Execute the vault kv put command dynamically
+            vault kv put "preprod/$config" $params
           done < ./qa
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
