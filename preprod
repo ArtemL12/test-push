@@ -1,5 +1,5 @@
 # Example configurations
 config1=username="qa-user1" password="1111"
 config2=username="dev-user2" password="2222"
-config3=username="test" password="111111111"
-config4
+config3=username="test" password={{MY_SECRET3}}
+
