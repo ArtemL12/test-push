@@ -1,0 +1,26 @@
+name: Sync GitHub Secrets to Vault (Self-Hosted)
+
+on:
+  workflow_dispatch:
+    inputs:
+      secrets_path:
+        description: 'Vault path to store GitHub secrets'
+        default: 'secret/github-secrets'
+        required: true
+
+jobs:
+  sync-secrets:
+    runs-on: self-hosted
+    steps:
+      - name: Add Secrets to Vault
+        run: |
+          export VAULT_ADDR="http://127.0.0.1:8200"
+          export VAULT_TOKEN="${{ secrets.VAULT_TOKEN }}"
+          
+          vault status
+          
+          vault kv put ${{ github.event.inputs.secrets_path }} \
+            MY_SECRET="${{ secrets.MY_SECRET }}"
+        env:
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+          MY_SECRET: ${{ secrets.SERVICE_TOKEN }}
