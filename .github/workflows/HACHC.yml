@@ -3,7 +3,7 @@ name: Sync GitHub Secrets to Vault (Self-Hosted)
 on:
   push:
     paths:
-      - preprod # Trigger only when the 'qa' file is modified
+      - preprod # Trigger only when the 'preprod' file is modified
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -30,6 +30,6 @@ jobs:
 
             # Execute the vault kv put command dynamically
             vault kv put "preprod/$config" $params
-          done < ./qa
+          done < ./preprod
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
