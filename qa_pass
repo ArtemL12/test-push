@@ -1,0 +1,3 @@
+# Example key-value pairs
+MY_SECRET_1=${{ secrets.MY_SECRET_1 }}
+MY_SECRET_2=${{ secrets.MY_SECRET_2 }}
