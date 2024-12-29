@@ -3,7 +3,7 @@ name: Sync GitHub Secrets to Vault (Self-Hosted)
 on:
   push:
     paths:
-      - qa_pass # Trigger only when files in the 'qa' directory are modified
+      - qa # Trigger only when the 'qa' file is modified
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -20,16 +20,23 @@ jobs:
 
           vault status
 
-          # Read the preprod file and write keys to Vault
+          # Read the qa file and replace placeholders with GitHub secrets
           while IFS= read -r line || [[ -n "$line" ]]; do
-            # Split the line into key and value
+            # Skip empty lines or comments
+            [[ -z "$line" || "$line" == \#* ]] && continue
+
+            # Extract the key and value
             IFS='=' read -r key value <<< "$line"
 
-            # Skip empty lines or comments
-            [[ -z "$key" || "$key" == \#* ]] && continue
+            # Replace placeholder with the actual GitHub secret
+            value=${value//\$\{\{ secrets./}
+            value=${value// \}\}/}
+
+            # Use the actual secret value
+            actual_value="${{ secrets.${value} }}"
 
             # Push the key-value pair to Vault
-            vault kv put "preprod/config" "$key"="$value"
-          done < ./qa/preprod
+            vault kv put preprod/config "$key"="$actual_value"
+          done < ./qa
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
